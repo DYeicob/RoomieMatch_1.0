@@ -1,0 +1,911 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoomieMatch - Encuentra tu compañero de piso ideal</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script type="importmap">
+    {
+        "imports": {
+            "lit-html": "https://cdn.jsdelivr.net/npm/lit-html@3.1.2/lit-html.js",
+            "lit-html/": "https://cdn.jsdelivr.net/npm/lit-html@3.1.2/"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div id="app-container">
+        <!-- Contenido dinámico renderizado por JavaScript -->
+    </div>
+
+    <div id="modal-root"></div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 RoomieMatch. Todos los derechos reservados.</p>
+            <p>Conectando personas, creando hogares.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+// The user has trouble running the project from local files.
+// The issue is likely that browsers block loading ES modules from the file:// protocol.
+// To fix this, the contents of data.js and main.js have been combined into this single inline script.
+// This removes the need for local module file loading and should allow the project to run correctly
+// when index.html is opened directly in a browser from the filesystem.
+
+import { html, render } from 'lit-html';
+import { classMap } from 'lit-html/directives/class-map.js';
+
+// --- INLINED DATA FROM data.js ---
+const initialProfiles = [
+  {
+    id: 1,
+    name: 'Ana García',
+    age: 24,
+    city: 'Madrid',
+    bio: 'Estudiante de máster en diseño gráfico. Soy ordenada, me gusta la tranquilidad entre semana y salir los findes. Busco buen rollo y limpieza.',
+    budget: 550,
+    tags: ['Ordenada', 'Sociable', 'No fumadora', 'Madrugadora'],
+    image: 'profile1.png',
+    verified: true,
+    likes: [],
+  },
+  {
+    id: 2,
+    name: 'Carlos Ruiz',
+    age: 29,
+    city: 'Barcelona',
+    bio: 'Desarrollador de software trabajando en remoto. Me encanta cocinar, los videojuegos y el cine. Busco un ambiente relajado y amistoso.',
+    budget: 650,
+    tags: ['Tranquilo', 'Cinéfilo', 'Cocinillas', 'Admite mascotas'],
+    image: 'profile2.png',
+    verified: true,
+    likes: [],
+  },
+  {
+    id: 3,
+    name: 'Alex Moreno',
+    age: 26,
+    city: 'Valencia',
+    bio: 'Artista freelance. Soy una persona creativa y nocturna. Disfruto de las conversaciones profundas y el arte. El respeto al espacio es clave.',
+    budget: 450,
+    tags: ['Nocturno/a', 'Creativo/a', 'Vegano/a', 'LGBT+ friendly'],
+    image: 'profile3.png',
+    verified: false,
+    likes: [],
+  },
+  {
+    id: 4,
+    name: 'Javier Soler',
+    age: 31,
+    city: 'Sevilla',
+    bio: 'Consultor de marketing. Paso poco tiempo en casa por trabajo, pero cuando estoy, me gusta que esté todo limpio y en orden. Busco alguien independiente.',
+    budget: 500,
+    tags: ['Limpio', 'Independiente', 'Viajero', 'No fumador'],
+    image: 'profile4.png',
+    verified: true,
+    likes: [],
+  },
+];
+const initialListings = [
+    {
+        id: 1,
+        userId: 1,
+        title: 'Habitación luminosa en Malasaña',
+        location: 'Malasaña, Madrid',
+        price: 580,
+        description: 'Habitación exterior con balcón. Piso recién reformado con 2 compañeros más. Buscamos a alguien limpio y sociable.',
+        image: 'listing1.png'
+    },
+    {
+        id: 2,
+        userId: 2,
+        title: 'Piso para compartir en Gràcia',
+        location: 'Gràcia, Barcelona',
+        price: 620,
+        description: 'Amplia habitación en ático con terraza. Somos dos chicos trabajadores. Ambiente tranquilo y amigable.',
+        image: 'listing2.png'
+    },
+    {
+        id: 3,
+        userId: 3,
+        title: 'Habitación junto al río Turia',
+        location: 'El Carmen, Valencia',
+        price: 430,
+        description: 'Habitación individual en piso de estudiantes. Cerca de las universidades y con buen ambiente. Todos los gastos incluidos.',
+        image: 'listing3.png'
+    }
+];
+
+// --- CONTENT FROM main.js ---
+// --- DOM ELEMENTS ---
+const appContainer = document.getElementById('app-container');
+const modalRoot = document.getElementById('modal-root');
+
+// --- LOCALSTORAGE "DATABASE" ---
+const DB = {
+    getProfiles: () => {
+        const p = localStorage.getItem('roomie-profiles');
+        if (!p) {
+            // Add emails to initial data for login simulation
+            const profilesWithAuth = initialProfiles.map((profile, i) => ({
+                ...profile,
+                email: `user${i + 1}@test.com`,
+                password: 'password123', // Insecure, for demo only
+                likes: profile.likes || [],
+            }));
+            localStorage.setItem('roomie-profiles', JSON.stringify(profilesWithAuth));
+            return profilesWithAuth;
+        }
+        return JSON.parse(p);
+    },
+    saveProfiles: (profiles) => {
+        localStorage.setItem('roomie-profiles', JSON.stringify(profiles));
+    },
+    getListings: () => {
+        const l = localStorage.getItem('roomie-listings');
+        if (!l) {
+            localStorage.setItem('roomie-listings', JSON.stringify(initialListings));
+            return initialListings;
+        }
+        return JSON.parse(l);
+    },
+    saveListings: (listings) => {
+        localStorage.setItem('roomie-listings', JSON.stringify(listings));
+    },
+    getCurrentUser: () => {
+        const u = localStorage.getItem('roomie-currentUser');
+        return u ? JSON.parse(u) : null;
+    },
+    saveCurrentUser: (user) => {
+        if (user) {
+            localStorage.setItem('roomie-currentUser', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('roomie-currentUser');
+        }
+    },
+    getConversations: () => {
+        const c = localStorage.getItem('roomie-conversations');
+        return c ? JSON.parse(c) : [];
+    },
+    saveConversations: (conversations) => {
+        localStorage.setItem('roomie-conversations', JSON.stringify(conversations));
+    },
+    getReviews: () => {
+        const r = localStorage.getItem('roomie-reviews');
+        return r ? JSON.parse(r) : [];
+    },
+    saveReviews: (reviews) => {
+        localStorage.setItem('roomie-reviews', JSON.stringify(reviews));
+    },
+};
+
+// --- STATE MANAGEMENT ---
+let state = {
+    currentUser: DB.getCurrentUser(),
+    profiles: DB.getProfiles(),
+    listings: DB.getListings(),
+    conversations: DB.getConversations(),
+    reviews: DB.getReviews(),
+    isLoginModalOpen: false,
+    isRegisterModalOpen: false,
+    currentPath: window.location.hash.slice(1) || '/',
+    activeConversationId: null,
+    profileFilters: {
+        tags: [],
+        maxBudget: null,
+    },
+};
+
+function setState(newState) {
+    state = { ...state, ...newState };
+    if (newState.profiles) DB.saveProfiles(state.profiles);
+    if (newState.listings) DB.saveListings(state.listings);
+    if (newState.hasOwnProperty('currentUser')) DB.saveCurrentUser(state.currentUser);
+    if (newState.conversations) DB.saveConversations(state.conversations);
+    if (newState.reviews) DB.saveReviews(state.reviews);
+    renderApp();
+}
+
+// --- TEMPLATES (PARTIALS) ---
+
+const headerTemplate = () => html`
+    <header>
+        <nav class="container">
+            <a href="#/" class="nav-logo" @click=${handleNav}>
+                <img src="logo.png" alt="RoomieMatch Logo">
+                <span>RoomieMatch</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#/profiles" class="nav-link ${state.currentPath === '/profiles' ? 'active' : ''}" @click=${handleNav}>Buscar Compañero</a></li>
+                <li><a href="#/listings" class="nav-link ${state.currentPath === '/listings' ? 'active' : ''}" @click=${handleNav}>Ver Anuncios</a></li>
+                ${state.currentUser ? html`
+                    <li><a href="#/my-profile" class="nav-link ${state.currentPath === '/my-profile' ? 'active' : ''}" @click=${handleNav}>Mi Perfil</a></li>
+                    <li><a href="#/my-listings" class="nav-link ${state.currentPath === '/my-listings' ? 'active' : ''}" @click=${handleNav}>Mis Anuncios</a></li>
+                ` : ''}
+            </ul>
+            <div class="nav-auth">
+                ${state.currentUser ? html`
+                    <a href="#/messages" @click=${handleNav} class="nav-icon-link" title="Mensajes">
+                        <img src="icon-envelope.png" alt="Mensajes">
+                    </a>
+                    <span class="nav-username">Hola, ${state.currentUser.name.split(' ')[0]}</span>
+                    <button @click=${handleLogout} class="btn btn-secondary">Cerrar Sesión</button>
+                ` : html`
+                    <button @click=${() => setState({ isLoginModalOpen: true })} class="btn btn-secondary">Iniciar Sesión</button>
+                    <button @click=${() => setState({ isRegisterModalOpen: true })} class="btn btn-primary">Registrarse</button>
+                `}
+            </div>
+        </nav>
+    </header>
+`;
+
+const closeModals = () => setState({ isLoginModalOpen: false, isRegisterModalOpen: false });
+
+const loginModalTemplate = () => html`
+    <div class="modal-overlay ${classMap({ active: state.isLoginModalOpen })}" @click=${closeModals}>
+        <div class="modal-content" @click=${e => e.stopPropagation()}>
+            <button class="modal-close" @click=${closeModals}>&times;</button>
+            <h2 class="modal-title">Iniciar Sesión</h2>
+            <form @submit=${handleLogin}>
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
+            </form>
+        </div>
+    </div>
+`;
+
+const registerModalTemplate = () => html`
+    <div class="modal-overlay ${classMap({ active: state.isRegisterModalOpen })}" @click=${closeModals}>
+        <div class="modal-content" @click=${e => e.stopPropagation()}>
+            <button class="modal-close" @click=${closeModals}>&times;</button>
+            <h2 class="modal-title">Crear Cuenta</h2>
+            <form @submit=${handleRegister}>
+                <div class="form-group"><label>Nombre Completo</label><input type="text" name="name" required></div>
+                <div class="form-group"><label>Email</label><input type="email" name="email" required></div>
+                <div class="form-group"><label>Contraseña</label><input type="password" name="password" required minlength="6"></div>
+                <div class="form-group"><label>Ciudad</label><input type="text" name="city" required></div>
+                <div class="form-group"><label>Edad</label><input type="number" name="age" required></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Registrarse</button>
+            </form>
+        </div>
+    </div>
+`;
+
+// --- TEMPLATES (PAGES & CARDS) ---
+
+const homeTemplate = () => html`
+  <div class="container">
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Encuentra tu compañero de piso ideal</h1>
+        <p>Conecta con personas afines y descubre el lugar perfecto para vivir. Tu próxima gran aventura empieza aquí.</p>
+        <button @click=${() => navigate('/profiles')} class="btn btn-primary btn-lg">Empezar a buscar</button>
+      </div>
+    </section>
+    <section class="how-it-works">
+        <h2>¿Cómo funciona?</h2>
+        <div class="steps">
+            <div class="step"><h3>1. Crea tu perfil</h3><p>Describe tu estilo de vida, presupuesto y lo que buscas en un compañero de piso.</p></div>
+            <div class="step"><h3>2. Descubre perfiles</h3><p>Nuestro algoritmo te mostrará perfiles compatibles. ¡Explora y encuentra tu match!</p></div>
+            <div class="step"><h3>3. Conecta y múdate</h3><p>Usa nuestra mensajería segura para conocerse y planificar la convivencia.</p></div>
+        </div>
+    </section>
+  </div>
+`;
+
+const profileCardTemplate = (profile) => {
+  const isLiked = state.currentUser?.likes?.includes(profile.id);
+  const openLogin = () => setState({ isLoginModalOpen: true });
+
+  const onLikeClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!state.currentUser) return openLogin();
+    handleLike(profile.id);
+  };
+
+  const onMessageClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!state.currentUser) return openLogin();
+    handleStartConversation(profile.id);
+  };
+
+  return html`
+  <div class="card profile-card">
+    <a href="#/profile/${profile.id}" @click=${handleNav} class="profile-link">
+        <div class="profile-card-header">
+          <img src="${profile.image || 'placeholder-profile.png'}" alt="${profile.name}" class="profile-img">
+          <h3 class="profile-name">
+            ${profile.name}, ${profile.age}
+            ${profile.verified ? html`<img src="icon-check.png" alt="Verificado" class="verified-icon">` : ''}
+          </h3>
+          <p class="profile-location">${profile.city}</p>
+        </div>
+    </a>
+    <div class="profile-card-body">
+        <p class="profile-bio">${profile.bio}</p>
+        <div class="profile-tags">
+            ${profile.tags.map(tag => html`<span class="tag">${tag}</span>`)}
+        </div>
+        <p class="profile-budget">Presupuesto: €${profile.budget}/mes</p>
+    </div>
+    <div class="profile-card-footer">
+        <img 
+            src="${isLiked ? 'icon-heart-filled.png' : 'icon-heart.png'}" 
+            alt="Guardar" 
+            class="card-icon" 
+            @click=${onLikeClick}
+            title=${isLiked ? 'Quitar de guardados' : 'Guardar perfil'}>
+        <img 
+            src="icon-message.png" 
+            alt="Enviar mensaje" 
+            class="card-icon" 
+            @click=${onMessageClick}
+            title="Enviar mensaje">
+    </div>
+  </div>
+`;
+}
+
+const getAllTags = () => {
+    const allTags = new Set();
+    state.profiles.forEach(p => {
+        if(p.tags) p.tags.forEach(tag => allTags.add(tag));
+    });
+    return Array.from(allTags).sort();
+};
+
+const profilesTemplate = () => {
+    const availableTags = getAllTags();
+
+    const handleTagFilterChange = (e) => {
+        const tag = e.target.value;
+        const currentTags = state.profileFilters.tags;
+        const newTags = e.target.checked
+            ? [...currentTags, tag]
+            : currentTags.filter(t => t !== tag);
+        setState({ profileFilters: { ...state.profileFilters, tags: newTags } });
+    };
+
+    const handleBudgetFilterChange = (e) => {
+        const maxBudget = parseInt(e.target.value, 10);
+        setState({ profileFilters: { ...state.profileFilters, maxBudget: maxBudget } });
+    };
+
+    const resetFilters = () => {
+        setState({ profileFilters: { tags: [], maxBudget: null } });
+    };
+
+    const filteredProfiles = state.profiles.filter(profile => {
+        const { tags, maxBudget } = state.profileFilters;
+        const tagMatch = tags.length === 0 || tags.every(t => profile.tags.includes(t));
+        const budgetMatch = !maxBudget || (profile.budget || 0) <= maxBudget;
+        return tagMatch && budgetMatch;
+    });
+
+    const budgetDisplay = state.profileFilters.maxBudget ? `Hasta €${state.profileFilters.maxBudget}` : 'Cualquier presupuesto';
+    const maxVal = Math.max(1000, ...state.profiles.map(p => p.budget || 0));
+    const maxPossibleBudget = Math.ceil(maxVal / 50) * 50;
+
+    return html`
+    <div class="container">
+        <h1 class="page-title">Encuentra a tu Roomie</h1>
+        
+        <div class="card filter-card">
+            <h2 class="filter-title">Filtros</h2>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label class="filter-label">Características:</label>
+                    <div class="tag-filters">
+                        ${availableTags.map(tag => html`
+                            <label class="tag-checkbox">
+                                <input type="checkbox" value="${tag}" .checked=${state.profileFilters.tags.includes(tag)} @change=${handleTagFilterChange}>
+                                <span class="tag">${tag}</span>
+                            </label>
+                        `)}
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label for="budget-filter" class="filter-label">Presupuesto máximo: <span class="budget-display">${budgetDisplay}</span></label>
+                    <input type="range" id="budget-filter" class="budget-slider" min="300" max="${maxPossibleBudget}" step="50" .value=${state.profileFilters.maxBudget || maxPossibleBudget} @input=${handleBudgetFilterChange}>
+                </div>
+            </div>
+             <button @click=${resetFilters} class="btn btn-secondary btn-small">Limpiar Filtros</button>
+        </div>
+
+        <div class="grid-container">
+            ${filteredProfiles.length > 0
+                ? filteredProfiles.map(profileCardTemplate)
+                : html`<p class="no-results">No se encontraron perfiles con esos criterios. Prueba a cambiar los filtros.</p>`
+            }
+        </div>
+    </div>
+    `;
+};
+
+const listingCardTemplate = (listing) => {
+    const owner = state.profiles.find(p => p.id === listing.userId);
+    return html`
+    <div class="card listing-card">
+        <img src="${listing.image}" alt="${listing.title}" class="listing-img">
+        <div class="listing-card-body">
+            <h3 class="listing-title">${listing.title}</h3>
+            <p class="listing-location">${listing.location}</p>
+            <p class="listing-price">€${listing.price} <span>/mes</span></p>
+            <p class="listing-description">${listing.description}</p>
+        </div>
+        <div class="listing-card-footer">
+            <div class="listing-owner">
+                ${owner ? html`
+                    <img src="${owner.image || 'placeholder-profile.png'}" alt="${owner.name}" class="owner-avatar">
+                    <span>Publicado por ${owner.name.split(' ')[0]}</span>
+                ` : 'Anuncio antiguo'}
+            </div>
+            <img src="icon-heart.png" alt="Guardar" class="card-icon">
+        </div>
+    </div>
+  `;
+};
+const listingsTemplate = () => html`
+    <div class="container">
+        <h1 class="page-title">Habitaciones y Pisos Disponibles</h1>
+        <div class="grid-container">
+            ${state.listings.map(listingCardTemplate)}
+        </div>
+    </div>
+`;
+
+const profileFormTemplate = () => {
+    if (!state.currentUser) return html`<div class="container"><p>Debes iniciar sesión para ver tu perfil.</p></div>`;
+    const userProfile = state.profiles.find(p => p.email === state.currentUser.email);
+    if (!userProfile) return html`<div class="container"><p>Error: No se encontró tu perfil.</p></div>`;
+    return html`
+    <div class="container">
+        <h1 class="page-title">Edita tu Perfil</h1>
+        <form @submit=${handleProfileUpdate} class="card" style="padding: 2rem; max-width: 700px; margin: 0 auto;">
+            <div class="form-group"><label>Nombre</label><input type="text" name="name" .value=${userProfile.name || ''}></div>
+            <div class="form-group"><label>Edad</label><input type="number" name="age" .value=${userProfile.age || ''}></div>
+            <div class="form-group"><label>Ciudad</label><input type="text" name="city" .value=${userProfile.city || ''}></div>
+            <div class="form-group"><label>Presupuesto (€/mes)</label><input type="number" name="budget" .value=${userProfile.budget || 0}></div>
+            <div class="form-group"><label>Biografía</label><textarea name="bio">${userProfile.bio || ''}</textarea></div>
+            <div class="form-group"><label>Tags (separados por comas)</label><input type="text" name="tags" .value=${(userProfile.tags || []).join(', ')}></div>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </form>
+    </div>`;
+};
+
+const myListingsTemplate = () => {
+    if (!state.currentUser) return html`<div class="container"><p>Debes iniciar sesión para ver tus anuncios.</p></div>`;
+
+    const userListings = state.listings.filter(l => l.userId === state.currentUser.id);
+
+    return html`
+    <div class="container">
+        <h1 class="page-title">Gestionar mis Anuncios</h1>
+
+        <div class="card" style="padding: 2rem; max-width: 700px; margin: 0 auto 2rem auto;">
+            <h2 style="margin-bottom: 1.5rem;">Publicar nuevo anuncio</h2>
+            <form @submit=${handleCreateListing}>
+                <div class="form-group"><label>Título</label><input type="text" name="title" required></div>
+                <div class="form-group"><label>Localización (e.g., Barrio, Ciudad)</label><input type="text" name="location" required></div>
+                <div class="form-group"><label>Precio (€/mes)</label><input type="number" name="price" required></div>
+                <div class="form-group"><label>Descripción</label><textarea name="description" required></textarea></div>
+                <div class="form-group"><label>URL de la imagen principal</label><input type="url" name="image" required placeholder="https://..."></div>
+                <button type="submit" class="btn btn-primary">Publicar Anuncio</button>
+            </form>
+        </div>
+
+        <h2 class="page-title" style="font-size: 2rem; margin-top: 3rem;">Mis anuncios publicados</h2>
+        ${userListings.length > 0
+            ? html`<div class="grid-container">${userListings.map(listingCardTemplate)}</div>`
+            : html`<p style="text-align:center;">Aún no has publicado ningún anuncio.</p>`
+        }
+    </div>
+    `;
+};
+
+const profileDetailTemplate = (profileId) => {
+    const profile = state.profiles.find(p => p.id === profileId);
+    if (!profile) return html`<div class="container"><p>Perfil no encontrado.</p></div>`;
+
+    const userReviews = state.reviews.filter(r => r.revieweeId === profileId);
+
+    const renderStars = (rating) => {
+        let stars = [];
+        for (let i = 1; i <= 5; i++) {
+            stars.push(html`<img src="${i <= rating ? 'icon-star-filled.png' : 'icon-star-empty.png'}" alt="star" class="star-icon">`);
+        }
+        return stars;
+    };
+
+    return html`
+    <div class="container">
+        <div class="profile-detail-card card">
+            <div class="profile-detail-header">
+                <img src="/${profile.image}" alt="${profile.name}" class="profile-detail-img">
+                <div class="profile-detail-info">
+                    <h1>${profile.name}, ${profile.age}</h1>
+                    <p>${profile.city}</p>
+                    <div class="profile-tags">
+                        ${profile.tags.map(tag => html`<span class="tag">${tag}</span>`)}
+                    </div>
+                </div>
+            </div>
+            <div class="profile-detail-body">
+                <h2>Sobre mí</h2>
+                <p>${profile.bio}</p>
+                <h2>Presupuesto</h2>
+                <p>€${profile.budget}/mes</p>
+            </div>
+        </div>
+
+        <div class="reviews-section card">
+            <h2>Reseñas</h2>
+            ${state.currentUser && state.currentUser.id !== profile.id ? html`
+                <a href="#/reviews/add/${profile.id}" @click=${handleNav} class="btn btn-primary">Escribir una reseña</a>
+            ` : ''}
+            
+            ${userReviews.length > 0 ? userReviews.map(review => {
+                const reviewer = state.profiles.find(p => p.id === review.reviewerId);
+                return html`
+                <div class="review">
+                    <div class="review-header">
+                        <img src="/${reviewer?.image || 'placeholder-profile.png'}" class="owner-avatar">
+                        <strong>${reviewer?.name || 'Usuario Anónimo'}</strong>
+                        <div class="star-rating">${renderStars(review.rating)}</div>
+                    </div>
+                    <p class="review-comment">${review.comment}</p>
+                </div>
+                `;
+            }) : html`<p>Este usuario todavía no tiene reseñas.</p>`}
+        </div>
+    </div>
+    `;
+};
+
+const addReviewTemplate = (profileId) => {
+    if (!state.currentUser) return html`<div class="container"><p>Debes iniciar sesión para dejar una reseña.</p></div>`;
+    const profile = state.profiles.find(p => p.id === profileId);
+
+    return html`
+        <div class="container">
+            <h1 class="page-title">Escribir reseña para ${profile.name}</h1>
+            <form @submit=${(e) => handleAddReview(e, profileId)} class="card" style="padding: 2rem; max-width: 700px; margin: 0 auto;">
+                <div class="form-group">
+                    <label>Puntuación</label>
+                    <div class="rating-input">
+                        <input type="radio" id="star5" name="rating" value="5" required><label for="star5" title="5 stars"></label>
+                        <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars"></label>
+                        <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars"></label>
+                        <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars"></label>
+                        <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star"></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Comentario</label>
+                    <textarea name="comment" required minlength="10" placeholder="Describe tu experiencia conviviendo con ${profile.name}..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar Reseña</button>
+            </form>
+        </div>
+    `;
+};
+
+const messagesTemplate = () => {
+    if (!state.currentUser) return html`<div class="container"><p>Debes iniciar sesión para ver tus mensajes.</p></div>`;
+
+    const myConversations = state.conversations
+        .filter(c => c.participants.includes(state.currentUser.id))
+        .sort((a, b) => {
+            const lastMsgA = a.messages[a.messages.length - 1];
+            const lastMsgB = b.messages[b.messages.length - 1];
+            if (!lastMsgA) return 1;
+            if (!lastMsgB) return -1;
+            return new Date(lastMsgB.timestamp) - new Date(lastMsgA.timestamp);
+        });
+
+    const activeConversation = state.conversations.find(c => c.id === state.activeConversationId);
+
+    return html`
+        <div class="container messages-container">
+            <div class="conversations-list card">
+                ${myConversations.length > 0 ? myConversations.map(c => {
+                    const otherUserId = c.participants.find(pId => pId !== state.currentUser.id);
+                    const otherUser = state.profiles.find(p => p.id === otherUserId);
+                    const lastMessage = c.messages[c.messages.length - 1];
+                    return html`
+                        <div 
+                            class="conversation-item ${classMap({ active: c.id === state.activeConversationId })}"
+                            @click=${() => setState({ activeConversationId: c.id })}
+                        >
+                            <img src="/${otherUser?.image || 'placeholder-profile.png'}" class="owner-avatar">
+                            <div class="conversation-info">
+                                <strong>${otherUser?.name || 'Usuario eliminado'}</strong>
+                                <p>${lastMessage ? lastMessage.content.substring(0, 25) + '...' : 'No hay mensajes'}</p>
+                            </div>
+                        </div>
+                    `;
+                }) : html`<p style="padding: 1rem; text-align: center;">No tienes conversaciones.</p>`}
+            </div>
+            <div class="chat-window card">
+                ${activeConversation ? html`
+                    <div class="chat-header">
+                        <h3>Conversación con ${state.profiles.find(p => p.id === activeConversation.participants.find(id => id !== state.currentUser.id))?.name}</h3>
+                    </div>
+                    <div class="chat-messages">
+                        ${activeConversation.messages.map(msg => html`
+                            <div class="message ${msg.senderId === state.currentUser.id ? 'sent' : 'received'}">
+                                <p>${msg.content}</p>
+                                <span class="message-time">${new Date(msg.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                        `)}
+                    </div>
+                    <form class="chat-input-form" @submit=${handleSendMessage}>
+                        <input type="text" name="message" placeholder="Escribe un mensaje..." autocomplete="off" required>
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </form>
+                ` : html`
+                    <div class="no-chat-selected">
+                        <img src="icon-message.png" alt="Mensajes">
+                        <p>Selecciona una conversación para empezar a chatear.</p>
+                    </div>
+                `}
+            </div>
+        </div>
+    `;
+};
+
+
+// --- ROUTER ---
+const routes = {
+    '/': homeTemplate,
+    '/profiles': profilesTemplate,
+    '/listings': listingsTemplate,
+    '/my-profile': profileFormTemplate,
+    '/my-listings': myListingsTemplate,
+    '/messages': messagesTemplate,
+};
+
+// --- EVENT HANDLERS ---
+function handleNav(e) {
+    e.preventDefault();
+    const href = e.currentTarget.getAttribute('href');
+    const path = href.substring(1) || '/'; // Get path from href like '#/profiles' -> '/profiles'
+    navigate(path);
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const email = formData.get('email');
+    const password = formData.get('password');
+    const user = state.profiles.find(p => p.email === email && p.password === password);
+    if (user) {
+        setState({ currentUser: user, isLoginModalOpen: false });
+    } else {
+        alert('Email o contraseña incorrectos.');
+    }
+}
+
+function handleRegister(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const email = formData.get('email');
+
+    if (state.profiles.some(p => p.email === email)) {
+        alert('Este email ya está registrado.');
+        return;
+    }
+
+    const newUser = {
+        id: Date.now(),
+        name: formData.get('name'),
+        age: parseInt(formData.get('age')),
+        city: formData.get('city'),
+        email: email,
+        password: formData.get('password'),
+        bio: '¡Hola! Acabo de unirme a RoomieMatch. Ayúdame a completar mi perfil.',
+        budget: 0,
+        tags: ['Nuevo'],
+        image: 'placeholder-profile.png',
+        verified: false,
+        likes: [],
+    };
+
+    const newProfiles = [...state.profiles, newUser];
+    DB.saveProfiles(newProfiles);
+
+    setState({
+        profiles: newProfiles,
+        currentUser: newUser,
+        isRegisterModalOpen: false,
+    });
+    navigate('/my-profile');
+}
+
+function handleLogout() {
+    setState({ currentUser: null });
+    navigate('/');
+}
+
+function handleCreateListing(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    const newListing = {
+        id: Date.now(),
+        userId: state.currentUser.id,
+        title: formData.get('title'),
+        location: formData.get('location'),
+        price: parseInt(formData.get('price')),
+        description: formData.get('description'),
+        image: formData.get('image'),
+    };
+
+    setState({
+        listings: [...state.listings, newListing]
+    });
+
+    e.target.reset(); // Clear the form
+}
+
+function handleProfileUpdate(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const updatedProfileData = {
+        name: formData.get('name'),
+        age: parseInt(formData.get('age')),
+        city: formData.get('city'),
+        budget: parseInt(formData.get('budget')),
+        bio: formData.get('bio'),
+        tags: formData.get('tags').split(',').map(t => t.trim()).filter(Boolean),
+    };
+
+    const updatedProfiles = state.profiles.map(p =>
+        p.id === state.currentUser.id ? { ...p, ...updatedProfileData } : p
+    );
+    
+    const updatedCurrentUser = { ...state.currentUser, ...updatedProfileData };
+
+    DB.saveProfiles(updatedProfiles);
+    setState({ profiles: updatedProfiles, currentUser: updatedCurrentUser });
+    alert('Perfil actualizado!');
+    navigate('/profiles');
+}
+
+function handleLike(profileId) {
+    if (!state.currentUser) return;
+
+    const currentUser = state.profiles.find(p => p.id === state.currentUser.id);
+    if (!currentUser) return;
+
+    const newLikes = currentUser.likes?.includes(profileId)
+        ? currentUser.likes.filter(id => id !== profileId)
+        : [...(currentUser.likes || []), profileId];
+    
+    const updatedUser = { ...currentUser, likes: newLikes };
+    
+    const updatedProfiles = state.profiles.map(p => p.id === currentUser.id ? updatedUser : p);
+    
+    setState({
+        profiles: updatedProfiles,
+        currentUser: updatedUser,
+    });
+}
+
+function handleStartConversation(recipientId) {
+    if (!state.currentUser || state.currentUser.id === recipientId) return;
+
+    let conversation = state.conversations.find(c => 
+        c.participants.includes(state.currentUser.id) && c.participants.includes(recipientId)
+    );
+
+    if (!conversation) {
+        conversation = {
+            id: Date.now(),
+            participants: [state.currentUser.id, recipientId],
+            messages: [],
+        };
+        setState({ conversations: [...state.conversations, conversation] });
+    }
+    
+    setState({ activeConversationId: conversation.id });
+    navigate('/messages');
+}
+
+function handleSendMessage(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const content = formData.get('message');
+    if (!content.trim() || !state.activeConversationId) return;
+
+    const newMessage = {
+        id: Date.now(),
+        senderId: state.currentUser.id,
+        content: content,
+        timestamp: new Date().toISOString(),
+    };
+
+    const updatedConversations = state.conversations.map(c => {
+        if (c.id === state.activeConversationId) {
+            return { ...c, messages: [...c.messages, newMessage] };
+        }
+        return c;
+    });
+
+    setState({ conversations: updatedConversations });
+    e.target.reset();
+}
+
+function handleAddReview(e, revieweeId) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const newReview = {
+        id: Date.now(),
+        reviewerId: state.currentUser.id,
+        revieweeId: revieweeId,
+        rating: parseInt(formData.get('rating')),
+        comment: formData.get('comment'),
+    };
+    setState({ reviews: [...state.reviews, newReview] });
+    alert('¡Gracias por tu reseña!');
+    navigate(`/profile/${revieweeId}`);
+}
+
+
+// --- RENDER & NAVIGATION ---
+function renderApp() {
+    const path = state.currentPath || '/';
+    let pageTemplate;
+    let match;
+
+    if (path.startsWith('/profile/')) {
+        match = path.match(/^\/profile\/(\d+)/);
+        if (match) {
+            pageTemplate = () => profileDetailTemplate(Number(match[1]));
+        }
+    } else if (path.startsWith('/reviews/add/')) {
+        match = path.match(/^\/reviews\/add\/(\d+)/);
+        if (match) {
+            pageTemplate = () => addReviewTemplate(Number(match[1]));
+        }
+    } else {
+        pageTemplate = routes[path] || routes['/'];
+    }
+
+    if (!pageTemplate) {
+      pageTemplate = routes['/']; // Fallback to home
+    }
+    
+    // Render the dynamic parts of the app into their container
+    render(html`${headerTemplate()}<main id="app-root">${pageTemplate()}</main>`, appContainer);
+    // Render modals in their own root so they are not affected by page re-renders
+    render(html`${loginModalTemplate()}${registerModalTemplate()}`, modalRoot);
+}
+
+const navigate = (path) => {
+    window.location.hash = path;
+};
+
+window.addEventListener('hashchange', () => {
+    setState({ currentPath: window.location.hash.slice(1) || '/' });
+});
+
+// --- INITIAL LOAD ---
+renderApp();
+    </script>
+</body>
+</html>
