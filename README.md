@@ -1,109 +1,111 @@
-# RoomieMatch
+# 🏠 RoomieMatch
 
-**RoomieMatch** es una aplicación web diseñada para ayudar a las personas a encontrar su compañero de piso ideal. Permite crear perfiles, explorar perfiles de otros usuarios, gestionar anuncios de habitaciones o pisos, enviar mensajes privados y dejar reseñas.
+**RoomieMatch** is a web application designed to help people find their ideal flatmate. It allows users to create profiles, explore other users' profiles, manage room or apartment listings, send private messages, and leave reviews.
 
 ---
 
-## Índice
+## 📋 Table of Contents
 
-- [Características](#características)
+- [Features](#features)
 - [Demo](#demo)
-- [Instalación](#instalación)
-- [Estructura del proyecto](#estructura-del-proyecto)
-- [Tecnologías utilizadas](#tecnologías-utilizadas)
-- [Uso](#uso)
-- [Contribuciones](#contribuciones)
-- [Licencia](#licencia)
+- [Installation](#installation)
+- [Project Structure](#project-structure)
+- [Technologies Used](#technologies-used)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## Características
+## ✨ Features
 
-- Registro e inicio de sesión de usuarios.
-- Creación y edición de perfil personal (nombre, edad, ciudad, bio, presupuesto, tags).
-- Búsqueda de compañeros de piso mediante filtros de tags y presupuesto.
-- Publicación y gestión de anuncios de habitaciones o pisos.
-- Sistema de "me gusta" para guardar perfiles favoritos.
-- Mensajería interna entre usuarios para coordinar la convivencia.
-- Sistema de reseñas y calificaciones para usuarios.
-
----
-
-## Demo
-
-> La aplicación puede ejecutarse localmente abriendo `index.html` en un navegador moderno compatible con módulos ES.  
-> **Nota:** Todos los datos se guardan en `localStorage` para simular una base de datos.
+- **User Authentication:** Sign up and log in system.
+- **Profile Management:** Create and edit personal profiles (name, age, city, bio, budget, tags).
+- **Advanced Search:** Find flatmates using tag filters and budget ranges.
+- **Listing Management:** Publish and manage ads for rooms or apartments.
+- **Favorites:** A "like" system to save favorite profiles.
+- **Internal Messaging:** Secure communication between users to coordinate cohabitation.
+- **Reviews & Ratings:** Review system for users to share their experiences with others.
 
 ---
 
-## Instalación
+## 🕹️ Demo
 
-1. Clonar el repositorio:
+> The application can be run locally by opening `index.html` in a modern browser that supports ES modules.  
+> **Note:** All data is stored in `localStorage` to simulate a database.
+
+---
+
+## ⚙️ Installation
+
+1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/tu-usuario/roomiematch.git
-````
+git clone [https://github.com/your-username/roomiematch.git](https://github.com/your-username/roomiematch.git)
 
-2. Abrir el archivo `index.html` en tu navegador:
+```
 
-> Se recomienda utilizar navegadores como Chrome, Edge o Firefox para evitar problemas con módulos ES.
+2. **Open the `index.html` file in your browser:**
 
-3. Opcional: Para un entorno más avanzado, servir la aplicación usando un servidor local (por ejemplo, `Live Server` en VSCode) para evitar problemas de CORS con módulos ES.
+> It is recommended to use browsers like Chrome, Edge, or Firefox to ensure compatibility with ES modules.
+
+3. **Optional (Recommended):** For a more stable environment, serve the application using a local server (e.g., `Live Server` in VSCode) to avoid CORS issues with local ES modules.
 
 ---
 
-## Estructura del proyecto
+## 📁 Project Structure
 
-```
+```text
 RoomieMatch/
 │
-├─ index.html           # Archivo principal de la aplicación
-├─ style.css            # Estilos globales
-├─ logo.png             # Logo de la aplicación
-├─ profile1.png, ...    # Imágenes de perfiles de ejemplo
-├─ listing1.png, ...    # Imágenes de anuncios de ejemplo
-├─ icon-*.png           # Iconos utilizados en la UI
-└─ README.md            # Documentación del proyecto
+├─ index.html           # Main application file (HTML/Scripts)
+├─ style.css            # Global styles
+├─ logo.png             # Application logo
+├─ profile1.png, ...    # Sample profile images
+├─ listing1.png, ...    # Sample listing images
+├─ icon-*.png           # UI icons
+└─ README.md            # Project documentation
+
 ```
 
-> Todos los scripts están integrados dentro de `index.html` para evitar problemas de carga de módulos locales.
+> **Note:** All scripts are integrated within `index.html` to simplify local module loading.
 
 ---
 
-## Tecnologías utilizadas
+## 🛠️ Technologies Used
 
-* **HTML5 & CSS3**: Estructura y estilos.
-* **JavaScript (ES6+)**: Lógica y manejo del DOM.
-* **[Lit-HTML](https://lit.dev/)**: Renderizado de templates dinámicos.
-* **LocalStorage**: Almacenamiento de datos simulando una base de datos.
-
----
-
-## Uso
-
-1. Abrir la aplicación en un navegador.
-2. Crear una cuenta o iniciar sesión con un usuario existente.
-3. Explorar perfiles o anuncios disponibles.
-4. Aplicar filtros de búsqueda según tus preferencias.
-5. Dar "me gusta" a perfiles que te interesen.
-6. Enviar mensajes a otros usuarios para coordinar la convivencia.
-7. Publicar y gestionar tus propios anuncios.
-8. Escribir reseñas sobre otros usuarios con los que hayas compartido piso.
+* **HTML5 & CSS3**: Structure and styling.
+* **JavaScript (ES6+)**: Logic and DOM manipulation.
+* **[Lit-HTML](https://lit.dev/)**: Dynamic template rendering.
+* **LocalStorage**: Client-side data storage simulating a persistent database.
 
 ---
 
-## Contribuciones
+## 🚀 Usage
 
-Si deseas contribuir a RoomieMatch:
-
-1. Haz un fork del repositorio.
-2. Crea una nueva rama para tu funcionalidad (`git checkout -b feature/nueva-funcionalidad`).
-3. Realiza tus cambios y haz commit.
-4. Envía un pull request describiendo tus mejoras o correcciones.
+1. Open the application in your browser.
+2. Create an account or log in with an existing user.
+3. Browse available profiles or apartment listings.
+4. Apply search filters based on your preferences.
+5. "Like" profiles that interest you to save them.
+6. Send messages to other users to coordinate logistics.
+7. Publish and manage your own housing ads.
+8. Write reviews for users you have lived with previously.
 
 ---
 
-## Licencia
+## 🤝 Contributing
 
-Este proyecto está bajo la licencia **MIT**.
-Ver [LICENSE](LICENSE) para más información.
+If you wish to contribute to RoomieMatch:
+
+1. Fork the repository.
+2. Create a new branch for your feature (`git checkout -b feature/new-functionality`).
+3. Make your changes and commit them.
+4. Submit a pull request describing your improvements or fixes.
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**.
+See the [LICENSE](https://www.google.com/search?q=LICENSE) file for more information.
